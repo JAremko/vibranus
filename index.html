@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Serial ArchKO</title>
+    <link rel="stylesheet" href="bulma.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+   <!-- <script src="serial.js"></script> -->
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <!-- Connect Button -->
+            <div id="connectContainer">
+                <button id="connect" class="button is-primary">Connect</button>
+            </div>
+
+            <!-- File Upload -->
+            <div class="file has-name">
+                <label class="file-label">
+                    <input class="file-input" type="file" name="jsonFile" id="jsonFile">
+                    <span class="file-cta">
+                        <span class="file-icon">
+                            📄
+                        </span>
+                        <span class="file-label">
+                            Choose a JSON file…
+                        </span>
+                    </span>
+                    <span class="file-name">
+                        No file chosen
+                    </span>
+                </label>
+            </div>
+
+            <!-- Cards will be generated here -->
+            <div id="cardsContainer"></div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async (event) => {
+
+            document.getElementById('jsonFile').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const data = JSON.parse(e.target.result);
+                        generateCards(data);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        });
+
+        function generateCards(data) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = ''; // Clear previous contents
+
+            data.cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'card';
+
+                const header = document.createElement('header');
+                header.className = 'card-header';
+                const title = document.createElement('p');
+                title.className = 'card-header-title';
+                title.textContent = card.name;
+                header.appendChild(title);
+
+                const content = document.createElement('div');
+                content.className = 'card-content';
+
+                card.inputs.forEach(input => {
+                    const field = document.createElement('div');
+                    field.className = 'field';
+
+                    const label = document.createElement('label');
+                    label.className = 'label';
+                    label.textContent = input.name;
+                    field.appendChild(label);
+
+                    const slider = document.createElement('input');
+                    slider.type = 'range';
+                    slider.id = input.instruction + 'Slider';
+                    slider.min = input.min;
+                    slider.max = input.max;
+                    slider.step = input.step;
+                    slider.setAttribute('oninput', `document.getElementById('${input.instruction}').value = this.value`);
+                    slider.removeAttribute('disabled');
+                    field.appendChild(slider);
+
+                    const numberInput = document.createElement('input');
+                    numberInput.type = 'number';
+                    numberInput.id = input.instruction;
+                    numberInput.min = input.min;
+                    numberInput.max = input.max;
+                    numberInput.step = input.step;
+                    numberInput.setAttribute('oninput', `document.getElementById('${input.instruction}Slider').value = this.value`);
+                    numberInput.removeAttribute('disabled');
+                    field.appendChild(numberInput);
+
+                    content.appendChild(field);
+                });
+
+                cardElement.appendChild(header);
+                cardElement.appendChild(content);
+                container.appendChild(cardElement);
+            });
+        }
+    </script>
+</body>
+</html>
