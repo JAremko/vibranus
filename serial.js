@@ -30,7 +30,9 @@ async function startReading() {
 
     try {
         while (true) {
+            console.log('Before reading');
             const { value, done } = await reader.read();
+            console.log('red something? Maybe?');
             if (done) {
                 if (accumulatedText.length > 0) {
                     console.log('Received:', accumulatedText);
