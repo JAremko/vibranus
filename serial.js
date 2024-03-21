@@ -71,6 +71,7 @@ function enableSlidersAndInputs() {
     const inputs = document.querySelectorAll('input[type=number]');
 
     sliders.forEach(slider => {
+        slider.disabled = false;
 
         slider.addEventListener('input', () => {
             const matchingInput = document.getElementById(slider.id.replace('Slider', ''));
@@ -80,6 +81,7 @@ function enableSlidersAndInputs() {
     });
 
     inputs.forEach(input => {
+        input.disabled = false;
 
         input.addEventListener('input', () => {
             const matchingSlider = document.getElementById(input.id + 'Slider');

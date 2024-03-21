@@ -9,7 +9,6 @@
 <body>
     <section class="section">
         <div class="container">
-            <!-- File Upload -->
             <div id="fileUploadContainer" class="file has-name">
                 <label class="file-label">
                     <input class="file-input" type="file" name="jsonFile" id="jsonFile">
@@ -29,12 +28,10 @@
 
             </br>
 
-            <!-- Connect Button -->
             <div id="connectContainer" style="display: none;">
                 <button id="connect" class="button is-primary">Connect</button>
             </div>
 
-            <!-- Cards will be generated here -->
             <div id="cardsContainer"></div>
         </div>
     </section>
@@ -53,7 +50,7 @@
                         const data = JSON.parse(e.target.result);
                         generateCards(data);
                         document.getElementById('fileUploadContainer').style.display = 'none';
-                        connectContainer.style.display = ''; // Show the connect button after a file is uploaded
+                        connectContainer.style.display = '';
                     };
                     reader.readAsText(file);
                 }
@@ -91,6 +88,7 @@
 
                 const slider = document.createElement('input');
                 slider.type = 'range';
+                slider.disabled = true;
                 slider.id = input.instruction + 'Slider';
                 slider.min = input.min;
                 slider.max = input.max;
@@ -101,6 +99,7 @@
 
                 const numberInput = document.createElement('input');
                 numberInput.type = 'number';
+                numberInput.disabled = true;
                 numberInput.id = input.instruction;
                 numberInput.min = input.min;
                 numberInput.max = input.max;
