@@ -1,0 +1,56 @@
+{
+   "cards":[
+      {
+         "name":"Display Settings",
+         "inputs":[
+            {
+               "name":"Vcom",
+               "instruction":"0",
+               "min":0,
+               "max":255,
+               "step":1
+            },
+            {
+               "name":"Brightness",
+               "instruction":"1",
+               "min":0,
+               "max":255,
+               "step":1
+            },
+            {
+               "name":"Contrast",
+               "instruction":"2",
+               "min":0,
+               "max":255,
+               "step":1
+            }
+         ]
+      },
+      {
+         "name":"ADV Settings",
+         "inputs":[
+            {
+               "name":"Brightness",
+               "instruction":"3",
+               "min":0,
+               "max":255,
+               "step":1
+            },
+            {
+               "name":"Contrast",
+               "instruction":"4",
+               "min":0,
+               "max":255,
+               "step":1
+            },
+            {
+               "name":"Hue",
+               "instruction":"5",
+               "min":0,
+               "max":255,
+               "step":1
+            }
+         ]
+      }
+   ]
+}

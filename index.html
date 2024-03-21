@@ -14,8 +14,10 @@
                 <button id="connect" class="button is-primary">Connect</button>
             </div>
 
+            </br>
+
             <!-- File Upload -->
-            <div class="file has-name">
+            <div id="fileUploadContainer" class="file has-name">
                 <label class="file-label">
                     <input class="file-input" type="file" name="jsonFile" id="jsonFile">
                     <span class="file-cta">
@@ -47,6 +49,7 @@
                     reader.onload = function(e) {
                         const data = JSON.parse(e.target.result);
                         generateCards(data);
+                        document.getElementById('fileUploadContainer').style.display = 'none';
                     };
                     reader.readAsText(file);
                 }
