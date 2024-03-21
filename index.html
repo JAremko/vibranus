@@ -4,7 +4,7 @@
     <title>Serial ArchKO</title>
     <link rel="stylesheet" href="bulma.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-   <!-- <script src="serial.js"></script> -->
+    <script src="serial.js"></script>
 </head>
 <body>
     <section class="section">
@@ -87,7 +87,6 @@
                     slider.max = input.max;
                     slider.step = input.step;
                     slider.setAttribute('oninput', `document.getElementById('${input.instruction}').value = this.value`);
-                    slider.removeAttribute('disabled');
                     field.appendChild(slider);
 
                     const numberInput = document.createElement('input');
@@ -97,7 +96,6 @@
                     numberInput.max = input.max;
                     numberInput.step = input.step;
                     numberInput.setAttribute('oninput', `document.getElementById('${input.instruction}Slider').value = this.value`);
-                    numberInput.removeAttribute('disabled');
                     field.appendChild(numberInput);
 
                     content.appendChild(field);

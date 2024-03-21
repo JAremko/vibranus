@@ -29,8 +29,8 @@ async function connectSerial() {
         await port.open({ baudRate: 38400 });
         writer = port.writable.getWriter();
         console.log('Connected to the serial port');
-        document.getElementById('connect').style.display = 'none'; // Hide connect button
-        enableSlidersAndInputs(); // Enable sliders and inputs
+        document.getElementById('connect').style.display = 'none';
+        enableSlidersAndInputs();
     } catch (err) {
         console.error('There was an error opening the serial port: ', err);
     }
@@ -40,49 +40,44 @@ function enableSlidersAndInputs() {
     const sliders = document.querySelectorAll('input[type=range]');
     const inputs = document.querySelectorAll('input[type=number]');
 
-    sliders.forEach((slider, index) => {
-        slider.disabled = false;
+    sliders.forEach(slider => {
 
-        // Add event listeners for slider events
-        ['input', 'mousedown', 'mouseup', 'click'].forEach(eventType => {
-            slider.addEventListener(eventType, () => {
-                inputs[index].value = slider.value;
-                sendSliderValue(getSliderIndex(slider.id), slider.value);
-            });
+        slider.addEventListener('input', () => {
+            const matchingInput = document.getElementById(slider.id.replace('Slider', ''));
+            if (matchingInput) matchingInput.value = slider.value;
+            sendSliderValue(slider.id, slider.value);
         });
     });
 
-    inputs.forEach((input, index) => {
-        input.disabled = false;
+    inputs.forEach(input => {
 
-        // Add event listeners for input events
-        ['input', 'change', 'mousedown', 'mouseup', 'click'].forEach(eventType => {
-            input.addEventListener(eventType, () => {
-                sliders[index].value = input.value;
-                sendSliderValue(getSliderIndex(input.id), input.value);
-            });
+        input.addEventListener('input', () => {
+            const matchingSlider = document.getElementById(input.id + 'Slider');
+            if (matchingSlider) matchingSlider.value = input.value;
+            sendSliderValue(input.id, input.value);
         });
     });
 }
 
-function getSliderIndex(sliderId) {
-    switch (sliderId) {
-        case "sliderVcom": return 0;
-        case "sliderBrightnessDisplay": return 1;
-        case "sliderContrastDisplay": return 2;
-        case "sliderBrightnessAdv": return 3;
-        case "sliderContrastAdv": return 4;
-        case "sliderHue": return 5;
-        default: return -1; // Invalid index
-    }
-}
+async function sendSliderValue(instruction, value) {
+    if (writer) {
+        const message = `${instruction}:${value}`;
+        let encoder = new TextEncoder();
+        let encodedMessage = encoder.encode(message);
 
-async function sendSliderValue(index, value) {
-    if (writer && index !== -1) {
-        const byteArray = [index, parseInt(value), 255];
-        await writer.write(new Uint8Array(byteArray));
-        console.log('Slider value sent:', byteArray);
+        if (encodedMessage.length > 19) {
+            console.error('Message is too long, it needs to be shorter than 20 bytes including null padding.');
+            return;
+        }
+
+        let payload = new Uint8Array(20);
+
+        payload.set(encodedMessage);
+
+        await writer.write(payload);
+        console.log('Payload sent:', payload);
     } else {
-        console.error('Serial port not connected, writer not set up, or invalid index.');
+        console.error('Serial port not connected or writer not set up.');
     }
 }
+
