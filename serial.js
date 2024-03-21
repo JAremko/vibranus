@@ -25,6 +25,8 @@ function displayNotSupportedError() {
 
 async function startReading() {
     const reader = port.readable.getReader();
+    let accumulatedText = '';
+    const textDecoder = new TextDecoder();
 
     try {
         while (true) {
@@ -33,9 +35,14 @@ async function startReading() {
                 console.log('Stream closed');
                 break;
             }
-            const textDecoder = new TextDecoder();
-            const text = textDecoder.decode(value);
-            console.log('Received:', text);
+            const text = textDecoder.decode(value, {stream: true});
+            accumulatedText += text;
+
+            const nullIndex = accumulatedText.indexOf('\0');
+            if (nullIndex !== -1) {
+                console.log('Received:', accumulatedText.slice(0, nullIndex));
+                accumulatedText = accumulatedText.slice(nullIndex + 1);
+            }
         }
     } catch (error) {
         console.error('Error reading from serial port:', error);
@@ -44,15 +51,16 @@ async function startReading() {
     }
 }
 
+
 async function connectSerial() {
     try {
         port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 38400 });
+        await port.open({ baudRate: 112500 });
         writer = port.writable.getWriter();
         console.log('Connected to the serial port');
         document.getElementById('connect').style.display = 'none';
         enableSlidersAndInputs();
-        startReading();
+        //startReading();
     } catch (err) {
         console.error('There was an error opening the serial port:', err);
     }
@@ -83,7 +91,9 @@ function enableSlidersAndInputs() {
 
 async function sendSliderValue(instruction, value) {
     if (writer) {
-        const message = `${instruction}:${value}`;
+        const instructionWithoutSlider = instruction.replace('Slider', '');
+
+        const message = `${instructionWithoutSlider}:${value}\0`;
         let encoder = new TextEncoder();
         let encodedMessage = encoder.encode(message);
 
@@ -93,10 +103,12 @@ async function sendSliderValue(instruction, value) {
         }
 
         let payload = new Uint8Array(20);
-
         payload.set(encodedMessage);
 
+        console.log('Sending message: ', message);
+
         await writer.write(payload);
+
         console.log('Payload sent:', payload);
     } else {
         console.error('Serial port not connected or writer not set up.');
