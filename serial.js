@@ -32,14 +32,17 @@ async function startReading() {
         while (true) {
             const { value, done } = await reader.read();
             if (done) {
+                if (accumulatedText.length > 0) {
+                    console.log('Received:', accumulatedText);
+                }
                 console.log('Stream closed');
                 break;
             }
             const text = textDecoder.decode(value, {stream: true});
             accumulatedText += text;
 
-            const nullIndex = accumulatedText.indexOf('\0');
-            if (nullIndex !== -1) {
+            let nullIndex;
+            while ((nullIndex = accumulatedText.indexOf('\0')) !== -1) {
                 console.log('Received:', accumulatedText.slice(0, nullIndex));
                 accumulatedText = accumulatedText.slice(nullIndex + 1);
             }
@@ -51,7 +54,6 @@ async function startReading() {
     }
 }
 
-
 async function connectSerial() {
     try {
         port = await navigator.serial.requestPort();
@@ -60,7 +62,7 @@ async function connectSerial() {
         console.log('Connected to the serial port');
         document.getElementById('connect').style.display = 'none';
         enableSlidersAndInputs();
-        //startReading();
+        startReading();
     } catch (err) {
         console.error('There was an error opening the serial port:', err);
     }
