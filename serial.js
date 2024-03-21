@@ -25,29 +25,16 @@ function displayNotSupportedError() {
 
 async function startReading() {
     const reader = port.readable.getReader();
-    let accumulatedText = '';
     const textDecoder = new TextDecoder();
 
     try {
         while (true) {
-            console.log('Before reading');
             const { value, done } = await reader.read();
-            console.log('red something? Maybe?');
             if (done) {
-                if (accumulatedText.length > 0) {
-                    console.log('Received:', accumulatedText);
-                }
                 console.log('Stream closed');
                 break;
             }
-            const text = textDecoder.decode(value, {stream: true});
-            accumulatedText += text;
-
-            let nullIndex;
-            while ((nullIndex = accumulatedText.indexOf('\0')) !== -1) {
-                console.log('Received:', accumulatedText.slice(0, nullIndex));
-                accumulatedText = accumulatedText.slice(nullIndex + 1);
-            }
+            console.log('Received:', textDecoder.decode(value));
         }
     } catch (error) {
         console.error('Error reading from serial port:', error);
