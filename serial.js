@@ -23,6 +23,27 @@ function displayNotSupportedError() {
                                  'Please check <a href="https://caniuse.com/web-serial" target="_blank">browser compatibility</a>.</div>';
 }
 
+async function startReading() {
+    const reader = port.readable.getReader();
+
+    try {
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+                console.log('Stream closed');
+                break;
+            }
+            const textDecoder = new TextDecoder();
+            const text = textDecoder.decode(value);
+            console.log('Received:', text);
+        }
+    } catch (error) {
+        console.error('Error reading from serial port:', error);
+    } finally {
+        reader.releaseLock();
+    }
+}
+
 async function connectSerial() {
     try {
         port = await navigator.serial.requestPort();
@@ -31,8 +52,9 @@ async function connectSerial() {
         console.log('Connected to the serial port');
         document.getElementById('connect').style.display = 'none';
         enableSlidersAndInputs();
+        startReading();
     } catch (err) {
-        console.error('There was an error opening the serial port: ', err);
+        console.error('There was an error opening the serial port:', err);
     }
 }
 
@@ -80,4 +102,3 @@ async function sendSliderValue(instruction, value) {
         console.error('Serial port not connected or writer not set up.');
     }
 }
-
