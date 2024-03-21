@@ -57,7 +57,7 @@ async function startReading() {
 async function connectSerial() {
     try {
         port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 112500 });
+        await port.open({ baudRate: 38400 });
         writer = port.writable.getWriter();
         console.log('Connected to the serial port');
         document.getElementById('connect').style.display = 'none';
